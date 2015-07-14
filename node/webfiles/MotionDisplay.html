@@ -1,0 +1,228 @@
+<title>Motion capturing by DomJ</title>
+
+<style type="text/css">
+body {padding: 0;margin: 0; overflow:hidden;}
+</style>
+
+
+<html>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+</html>
+
+<script type="text/javascript">
+    var content = document.getElementById('content');
+    var socket = new WebSocket('ws://192.168.178.45:1337');
+    var panels = [];
+    var clients = [false,false];
+    socket.onopen = function () {
+        socket.send('Connected(Client)(DataDisplayer)');
+    };
+
+    socket.onmessage = function (message) {
+
+		panels[parseFloat(message.data.replace("[","").split(",")[1])].y = parseFloat(message.data.replace("[","").split(",")[0]);  // In range 0-1000
+    //Update connected Clients
+    if(panels[0].y == -2){
+      clients[0] = true;
+      panels[0].y = 500;
+    } else if(panels[0].y == -1){
+      clients[0] = false;
+      panels[0].y = 500;
+    } else if (panels[1].y == -2){
+      clients[1] = true;
+      panels[1].y = 500;
+    } else if(panels[1].y == -1){
+      clients[1] = false;
+      panels[1].y = 500;
+    }
+    };
+
+    socket.onerror = function (error) {
+        console.log('WebSock error: ' + error);
+    };
+
+	// Initialize canvas and required variables
+		var canvas = document.getElementById("canvas");
+		var	ctx = canvas.getContext("2d"); // Create canvas context
+		var	W = window.innerWidth; // Window's width
+		var	H = window.innerHeight; // Window's height
+		var	fps = 60; // Max FPS (frames per second)
+		var score = [0,0];
+		// Set the canvas's height and width to full screen
+		canvas.width = W;
+		canvas.height = H;
+
+
+		// RequestAnimFrame: a browser API for getting smooth animations
+        window.requestAnimFrame = (function(){
+			return  window.requestAnimationFrame       ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame    ||
+				window.oRequestAnimationFrame      ||
+				window.msRequestAnimationFrame     ||
+				function( callback ){
+				return window.setTimeout(callback, 1000 / 60);
+				};
+			})();
+		window.cancelRequestAnimFrame = ( function() {
+			return window.cancelAnimationFrame          ||
+		window.webkitCancelRequestAnimationFrame    ||
+		window.mozCancelRequestAnimationFrame       ||
+		window.oCancelRequestAnimationFrame     ||
+		window.msCancelRequestAnimationFrame        ||
+		clearTimeout
+		} )();
+
+		//Benötigte Objekte:
+
+		// Ball object
+		ball = {
+				x: W/2,
+				y: H/2,
+				r: W/300,
+				c: "white",
+				vx: 8,
+				vy: 0,
+        bounces: 0,
+        old: {
+          x: W/2,
+          y: H/2
+        },
+				// Function for drawing ball on canvas
+				draw: function() {
+					ctx.beginPath();
+					ctx.fillStyle = this.c;
+					ctx.arc(this.x, this.y, this.r, 0, Math.PI*2, false);
+					ctx.fill();
+				}
+			};
+
+    panels = [];
+
+    panels.push({ //Linkes Panel
+      width: W/200,
+      height: H/5,
+      y: 500,
+      px: W/50,
+      py: 0,
+
+      draw: function(){
+        this.py = H/1000*this.y-this.height/1000*this.y;  //Panel proportional darstellen
+        ctx.fillStyle = "white"; //linkes Panel
+        ctx.fillRect(this.px, this.py, this.width, this.height);
+      }
+    });
+
+    panels.push({ //Rechtes Panel
+      width: W/200,
+      height: H/5,
+      y: 500,
+      px: W-W/50,
+      py: 0,
+
+      draw: function(){
+        this.py = H/1000*this.y-this.height/1000*this.y;  //Panel proportional darstellen
+        ctx.fillStyle = "white"; //linkes Panel
+        ctx.fillRect(this.px, this.py, this.width, this.height);
+      }
+    });
+
+
+
+		function draw(){
+			ctx.fillStyle = "black";
+			ctx.fillRect(0, 0, W, H);
+
+      panels.forEach(function (panel){
+        panel.draw();
+      });
+
+
+
+			ctx.fillStyle = "red"
+			ctx.font = "bold 30px Arial";
+			ctx.fillText("Score: " + score[0],W/4,H/8);
+
+			ctx.fillStyle = "red"
+			ctx.font = "bold 30px Arial";
+			ctx.fillText("Score: " + score[1],W-W/4,H/8);
+
+      if(clients[0] == true){
+        ctx.fillText("Connected",W/4-10,H/8+35);
+      }
+      if(clients[1] == true){
+        ctx.fillText("Connected",W-W/4-10,H/8+35);
+      }
+
+			ball.draw();
+		}
+		function update(){
+
+      ball.old.x = ball.x;
+      ball.old.y = ball.y;
+			ball.x += ball.vx;
+			ball.y += ball.vy;
+			if(ball.y < 0 || ball.y > H)
+			{
+			ball.vy = -ball.vy;
+			}
+
+      //Advanced collision Detection
+      if(ball.x< panels[0].px + panels[0].width + ball.r && ball.old.x >= panels[0].px + panels[0].width + ball.r ){ //When it moves over the line where it should bounce of
+        //The Ball traveled above the line; Now check where he would have been on the Line
+        ratio = Math.abs((ball.old.x - (panels[0].px + panels[0].width + ball.r))/(ball.x -ball.old.x)); //ratio at how near the ball is to the bouncing line
+        ball_bouncing_y = ball.old.y + ratio * ball.vy; //This is were the ball had hit if it were excactly on the line
+        if(ball_bouncing_y >= panels[0].py  && ball_bouncing_y <= panels[0].py + panels[0].height){
+        ball.x = panels[0].px + panels[0].width +ball.r; //Set Ball where it should have bounced
+        ball.vx = -ball.vx;
+        ball.bounces++;
+        ball.vy = (Math.random()-0.5) *8;
+        }
+      }else if (ball.x> panels[1].px - ball.r  && ball.old.x <= panels[1].px - ball.r) {
+        ratio = Math.abs((ball.old.x - (panels[1].px - ball.r))/(ball.x -ball.old.x)); //ratio at how near the ball is to the bouncing line
+        ball_bouncing_y = ball.old.y + ratio * ball.vy; //This is were the ball had hit if it were excactly on the line
+        if (ball_bouncing_y >= panels[1].py  && ball_bouncing_y <= panels[1].py + panels[1].height ){
+          ball.x = panels[1].px - ball.r;
+          ball.vx = -ball.vx;
+          ball.bounces++;
+          ball.vy = (Math.random()-0.5) *8;
+        }
+
+      }
+
+      if(ball.bounces > 4){
+        ball.vx +=ball.vx *1.1;
+        ball.bounces = 0;
+      }
+      //Punkterkennung
+      if(ball.x < 0){
+        score[1]+=1;
+        ball.x = W/2;
+        ball.y = H/2;
+        ball.vx = 4;
+        ball.vy = 4
+      }
+      else if(ball.x > W){
+        score[0] +=1;
+        ball.x = W/2;
+        ball.y = H/2;
+        ball.vx = 4;
+        ball.vy = 4
+      }
+
+		}
+
+
+		// Function for running the whole animation
+		function animloop() {
+			init = requestAnimFrame(animloop);
+      if(clients[0] == true && clients[1] ==true){
+			update();
+    }
+			draw();
+		}
+		animloop();
+
+</script>

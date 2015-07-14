@@ -1,0 +1,108 @@
+<title>MotionReader by DomJ</title>
+
+<style type="text/css">
+body {padding: 0;margin: 0; overflow:hidden;}
+</style>
+
+
+<html>
+<body>
+
+<canvas id="canvas"></canvas>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    var socket = new WebSocket('ws://192.168.178.45:8000');
+
+	var beta=0; //Range 0-180
+	var panel_y = 500; //Range 0-1000 for better precision
+
+    socket.onopen = function () {
+        socket.send('Connected(Client)');
+			};
+			socket.onmessage = function (message) {
+			};
+
+			socket.onerror = function (error) {
+				console.log('WebSocket error: ' + error);
+			};
+
+
+
+		// Initialize canvas and required variables
+		var canvas = document.getElementById("canvas");
+		var	ctx = canvas.getContext("2d"); // Create canvas context
+		var	W = window.innerWidth; // Window's width
+		var	H = window.innerHeight; // Window's height
+		var	fps = 60; // Max FPS (frames per second)
+		// Set the canvas's height and width to full screen
+		canvas.width = W;
+		canvas.height = H;
+
+
+		// RequestAnimFrame: a browser API for getting smooth animations
+        window.requestAnimFrame = (function(){
+			return  window.requestAnimationFrame       ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame    ||
+				window.oRequestAnimationFrame      ||
+				window.msRequestAnimationFrame     ||
+				function( callback ){
+				return window.setTimeout(callback, 1000 / 60);
+				};
+			})();
+
+		function draw(){
+			ctx.fillStyle = "black";
+			ctx.fillRect(0, 0, W, H);
+			ctx.fillStyle = "white"; //linkes Panel(für Beta anzeige)
+			ctx.fillRect(0, H/180*beta - H/20/2, W/2, H/20); //H durch 180(maximaler Winkel) * beta gibt richtigen Pixel zum anzeigen raus | - H/20/2 fürs mittige
+			ctx.fillStyle = "red"
+			ctx.font = "bold 30px Arial";
+			ctx.fillText("beta:    " + beta.toFixed(1),10,30);
+			ctx.fillText("panel_y: " + panel_y.toFixed(1),10,60);
+
+			ctx.fillStyle = "white"; //Rechtes (echtes) Panel
+			ctx.fillRect(W/2, H/1000*panel_y - H/20/2, W/2, H/20); //H durch 180(maximaler Winkel) * beta gibt richtigen Pixel zum anzeigen raus | - H/20/2 fürs mittige
+
+
+		}
+
+
+		// Function for running the whole animation
+		function animloop() {
+			init = requestAnimFrame(animloop);
+			//Panel bewegen
+
+			panel_y += (beta-90);
+			if(panel_y < 0){
+			panel_y = 0;
+			} else if(panel_y > 1000){
+			panel_y = 1000;
+			}
+			socket.send("[" +panel_y+  "]");
+			draw();
+
+		}
+
+		function handleOrientation(event) {
+		  beta = event.beta;  // In degree in the range [-180,180] front|back pitch
+
+		  // Because we don't want to have the device upside down
+		  // We constrain the x value to the range [-90,90]
+		  if (beta >  90) { beta =  90};
+		  if (beta < -90) { beta = -90};
+		  // To make computation easier we shift the range of
+		  // beta and y to [0,180]
+		  beta += 90;
+		  // 10 is half the size of the ball
+		  // It center the positioning point to the center of the ball
+
+		}
+
+		window.addEventListener('deviceorientation', handleOrientation);
+		animloop();
+
+</script>
