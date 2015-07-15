@@ -15,7 +15,7 @@ or ```git clone --recursive https://github.com/XPerianer/Motion_Controlled_Pong.
 ##To use the NodeJS-Server: 
 1. Install node on your device.
 2. From the main directory, switch to the node directory:  ```cd node/```
-3. Install the depencies with npm:  ```node install```
+3. Install the depencies with npm:  ```npm install```
 4. Edit the IP-Configuration to your needs, example given with nano: ```nano pong_websocket.js```
 5. Start the desired server, example given for the website version: ```sudo node pong_websocket.js```
 6. Connect Smartphones and Displays by browsing to the IP of your device
@@ -23,7 +23,7 @@ or ```git clone --recursive https://github.com/XPerianer/Motion_Controlled_Pong.
 ##To use the LED-Matrix:
 1. Install gpp on your device.
 2. From the main directory, switch to the LED-Matrix directory: ```cd LED_matrix/```
-3. Edit the IP-Configuration to your needs, example given with nano: ```nano ./pong.cpp```
+3. Edit the IP-Configuration to your needs, example given with nano(It's a little hidden but you have to change `192.168.178.45` to your needs: ```nano pong.cpp```
 4. Compile everything by using the makefile: ```make```
 5. Meanwhile, startup the node server, **this has to be parrallel, for example in another terminal window**: ```../node/pong_tcpsocket.js```
 6. Start the display: ```sudo ./pong.app```
