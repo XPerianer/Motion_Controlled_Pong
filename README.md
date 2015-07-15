@@ -8,6 +8,10 @@ If you have an 32*32 LED-Matrix able to be driven with the rpi-led-matrix git pr
 
 #Installation
 
+##Clone the Project:
+**Important:** Because the project uses submodules, you have to clone it recursively, ```git clone --recursive git@github.com:XPerianer/Motion_Controlled_Pong.git```
+or ```git clone --recursive https://github.com/XPerianer/Motion_Controlled_Pong.git```
+
 ##To use the NodeJS-Server: 
 1. Install node on your device.
 2. From the main directory, switch to the node directory:  ```cd node/```
