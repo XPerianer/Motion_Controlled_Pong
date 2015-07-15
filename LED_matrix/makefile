@@ -1,5 +1,5 @@
-RGB_INCDIR= ../matrix/include
-RGB_LIBDIR= ../matrix/lib
+RGB_INCDIR= ../matrix_library/include
+RGB_LIBDIR= ../matrix_library/lib
 RGB_LIBRARY_NAME=rgbmatrix
 RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread
@@ -9,7 +9,7 @@ CXXFLAGS := -Wall -O3 -g -std=c++0x
 OBJECTS := pong.o game.o
 BINARIES := pong_bin
 
-pong : $(OBJECTS) $(RGB_LIBRARY)
+pong.app : $(OBJECTS) $(RGB_LIBRARY)
 	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
 
 

@@ -1,0 +1,6 @@
+[submodule "LED_Matrix_Library"]
+	path = LED_Matrix_Library
+	url = https://github.com/hzeller/rpi-rgb-led-matrix.git
+[submodule "matrix_library"]
+	path = matrix_library
+	url = git@github.com:hzeller/rpi-rgb-led-matrix.git

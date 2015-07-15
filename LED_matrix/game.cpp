@@ -42,7 +42,7 @@ void Paddle::draw(Canvas *canvas){
 }
 
 Game::Game(): leftPaddle(1,0), rightPaddle(30,0),ball(32,32), background_color(0,0,0), foreground_color(200,0,0){
-   if(!font.LoadFont("../matrix/fonts/4x6.bdf")){
+   if(!font.LoadFont("../matrix_library/fonts/4x6.bdf")){
      std::cout << "Error at loading Font File" << std::endl;
    }
     /*

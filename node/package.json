@@ -1,0 +1,16 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "Server for smartphone-motion controlled pong.",
+  "main": "pong_tcpsocket.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "XPerianer",
+  "license": "ISC",
+  "dependencies": {
+    "connect": "^3.4.0",
+    "serve-static": "^1.10.0",
+    "ws": "^0.7.2"
+  }
+}
