@@ -38,6 +38,9 @@ int socketfunction(){
         return 1;
     }
 
+    while(true){ //Loop for the whole connecting thing in case the server fucks up
+
+    do {
     // loop through all the results and connect to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
@@ -53,21 +56,25 @@ int socketfunction(){
         }
 
         break;
-    }
+      }
+      usleep(1000000 * 2);
+    } while(p == NULL);
 
-    if (p == NULL) {
+    /*if (p == NULL) {
         fprintf(stderr, "client: failed to connect\n");
+
         return 2;
-    }
+    }*/
 
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
             s, sizeof s);
     printf("client: connecting to %s\n", s);
 
-    freeaddrinfo(servinfo); // all done with this structure
-    while(true){
+    //freeaddrinfo(servinfo); // all done with this structure //We need it later if we want to connect multiple times
+
+    while(true){ //Get new Positional data the whole time
     int index = -1;
-    std::string s;
+    std::string answer;
     try{ //Be safe if communication fails
     if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
         perror("recv");
@@ -77,25 +84,29 @@ int socketfunction(){
     buf[numbytes] = '\0';
 
     for(int i=0;i< numbytes;i++){
-      s += buf[i];
+      answer += buf[i];
     }
 
-
-    index = std::stoi(s.substr(s.find(',')+1,1));
+  index = std::stoi(answer.substr(answer.find(',')+1,1));
     if(index==0){
-      game.leftPaddle.position = std::stoi(s.substr(1));
+      game.leftPaddle.position = std::stoi(answer.substr(1));
     } else if(index ==1) {
-      game.rightPaddle.position = std::stoi(s.substr(1));
+      game.rightPaddle.position = std::stoi(answer.substr(1));
     }
-}
+
+
+    }
     catch (...){
       std::cout << "Error at Socket reading" << std::endl;
       usleep(1000000*1);
+      break;
     }
-    //printf("client: received '%s'\n",buf);
-  }
 
+  }
+    //printf("client: received '%s'\n",buf);
     close(sockfd);
+
+  }
 
     return 0;
 }
