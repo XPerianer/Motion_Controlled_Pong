@@ -13,7 +13,7 @@ If you have an 32*32 LED-Matrix able to be driven with the rpi-led-matrix git pr
 or ```git clone --recursive https://github.com/XPerianer/Motion_Controlled_Pong.git```
 
 ##To use the NodeJS-Server: 
-1. Install node on your device.
+1. Install node on your device. You could use this great tutorial:       https://learn.adafruit.com/node-embedded-development/installing-node-dot-js
 2. From the main directory, switch to the node directory:  ```cd node/```
 3. Install the depencies with npm:  ```npm install```
 4. Edit the IP-Configuration to your needs, example given with nano: ```nano pong_websocket.js```
