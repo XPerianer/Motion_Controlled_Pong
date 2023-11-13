@@ -28,7 +28,6 @@ If you have an 32*32 LED-Matrix able to be driven with the rpi-led-matrix git pr
 6. Start the display: ```sudo ./pong.app```
 7. Connect Smartphones by browsing to the IP of your Raspberry Pi
 
-#Note of thanks
+# Note of thanks
 Thanks to Kushagra Agarwal for letting me use his javascript-pong code i adapted to work with this project.
-
 Thanks to the developers of the rpi-led-matrix project on github I use in my project.
