@@ -16,7 +16,7 @@
 
 
 var tcp_client = 0;
-var WebSocketServer = require('ws').Server
+var WebSocketServer = require('ws').WebSocketServer
 var DataGetter = new WebSocketServer({host: '0.0.0.0',port:8000});
 var Clients = [ false, false];
 DataGetter.on('connection',function(ws){
@@ -39,6 +39,7 @@ DataGetter.on('connection',function(ws){
 	console.log("Client(DataGetter) mit Websocket verbunden");
 
 	ws.on('message',function(message){ //(recieves messages)
+		message = message.toString();
 		//console.log('Von Websocket-Client empfangen: ' + message);
 		if(tcp_client != 0 && message.charAt(0) == '['){ //Very dirty way of checking if it's actually a fine message from the smartphone(this is because it would sende a Client connected message if this wasn't checked)
 		tcp_client.write(message.replace("]",",") + ClientNumber + "]");
