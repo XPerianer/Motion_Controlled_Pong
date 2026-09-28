@@ -14,7 +14,7 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-var WebSocketServer = require('ws').Server
+var WebSocketServer = require('ws').WebSocketServer
 var DataGetter = new WebSocketServer({host: '0.0.0.0',port:8000});
 var Clients = [ false, false];
 DataGetter.on('connection',function(ws){
@@ -37,6 +37,7 @@ DataGetter.on('connection',function(ws){
 	console.log("Client(DataGetter) connected to Websocket");
 
 	ws.on('message',function(message){ //(recieves messages)
+		message = message.toString();
 		//console.log('Reveived by Client: ' + message); //Debug
 
 		DataSender.clients.forEach(function each(client,index) {
